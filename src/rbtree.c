@@ -595,3 +595,27 @@ int rb_validate(const rbtree_t *t)
     }
     return 0;
 }
+
+static void rb_foreach_recursive(const rbnode_t *node,
+    void (*fn)(const char *key, void *value, void *ctx),
+    void *ctx)
+{
+    if (node->left != NIL) {
+        rb_foreach_recursive(node->left, fn, ctx);
+    }
+    fn(node->key, node->value, ctx);
+    if (node->right != NIL) {
+        rb_foreach_recursive(node->right, fn, ctx);
+    }
+    return;
+}
+
+void rb_foreach(const rbtree_t *t,
+    void (*fn)(const char *key, void *value, void *ctx),
+    void *ctx)
+{
+    if (t->root == NIL) {
+        return;
+    }
+    return rb_foreach_recursive(t->root, fn, ctx);
+}

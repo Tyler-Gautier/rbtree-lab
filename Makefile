@@ -29,5 +29,22 @@ memcheck: clean all
 
 clean:
 	rm -rf build
-	
-.PHONY: all test asan memcheck clean
+
+PKG_NAME := rbtree-lab
+PKG_DIR := build/$(PKG_NAME)
+CLAUDE_LOG_DIR := $(HOME)/.claude/projects/-home-tyler-Documents-CS370-rbtree-lab
+
+package: 
+	@rm -rf $(PKG_DIR)
+	@mkdir -p $(PKG_DIR)/src $(PKG_DIR)/tests $(PKG_DIR)/include $(PKG_DIR)/claude-logs
+	cp Makefile $(PKG_DIR)/
+	cp src/rbtree.c $(PKG_DIR)/src/
+	cp tests/test_rbtree.c tests/fuzz.c $(PKG_DIR)/tests/
+	cp include/rbtree.h $(PKG_DIR)/include/
+	cp CLAUDE.md PROMPTLOG.md REFLECTION.md $(PKG_DIR)/
+	cp $(CLAUDE_LOG_DIR)/*.jsonl $(PKG_DIR)/claude-logs/
+	cp -r .git $(PKG_DIR)/
+	cd build && zip -r ../$(PKG_NAME).zip $(PKG_NAME)
+	rm -rf $(PKG_DIR)
+
+.PHONY: all test asan memcheck clean package
