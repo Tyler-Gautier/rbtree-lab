@@ -4,6 +4,9 @@
 
 typedef enum rb_color {BLACK, RED} rb_color_t;
 
+static void *rb_malloc(size_t t) {return malloc(t);}
+static void rb_free(void *p) {free(p);}
+
 typedef struct rbnode 
 {
     void *value;
@@ -67,11 +70,11 @@ static int is_leaf(rbnode_t *node)
 
 static int delete_node(rbtree_t *t, rbnode_t *node)
 {
-    free(node->key);
+    rb_free(node->key);
     if (t->free_fn != NULL) {
     t->free_fn(node->value);
     }
-    free(node);
+    rb_free(node);
     t->size--;
     return 0;
 }
@@ -109,13 +112,13 @@ static int count_children(rbnode_t *node)
 
 static rbnode_t *node_create(const char *key, void *value, rbnode_t *parent)
 {
-    rbnode_t *node = malloc(sizeof(*node));
+    rbnode_t *node = rb_malloc(sizeof(*node));
     if (node == NULL) {
         goto fail_node;
     }
 
     size_t key_len = strlen(key) + 1;
-    node->key = malloc(key_len);
+    node->key = rb_malloc(key_len);
     if (node->key == NULL) {
         goto fail_key;
     }
@@ -128,14 +131,14 @@ static rbnode_t *node_create(const char *key, void *value, rbnode_t *parent)
     return node;
 
 fail_key:
-    free(node);
+    rb_free(node);
 fail_node:
     return NULL;
 }
 
 rbtree_t *rb_create(rb_value_free_fn value_free)
 {
-    rbtree_t *t = malloc(sizeof(*t));
+    rbtree_t *t = rb_malloc(sizeof(*t));
     if (t == NULL) {
         return NULL;
     }
@@ -474,8 +477,8 @@ static void destroy_recursive(rbtree_t *t, rbnode_t *node)
     if (t->free_fn != NULL) {
         t->free_fn(node->value);
     }
-    free(node->key);
-    free(node);
+    rb_free(node->key);
+    rb_free(node);
 }
 
 void rb_destroy(rbtree_t *t)
@@ -484,7 +487,7 @@ void rb_destroy(rbtree_t *t)
         return;
     }
     destroy_recursive(t, t->root);
-    free(t);
+    rb_free(t);
 }
 
 static int rb_black_height(const rbnode_t *node)
