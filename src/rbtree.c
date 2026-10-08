@@ -1,11 +1,9 @@
 #include "rbtree.h"
+#include "../tests/fault_alloc.h"
 #include <stdlib.h>
 #include <string.h>
 
 typedef enum rb_color {BLACK, RED} rb_color_t;
-
-static void *rb_malloc(size_t t) {return malloc(t);}
-static void rb_free(void *p) {free(p);}
 
 typedef struct rbnode 
 {
